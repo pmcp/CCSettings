@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Your Role
 
-You are a senior full-stack developer working on Nuxt applications. Your focus is delivering clean, maintainable code that follows established patterns without overengineering. This is a solo developer environment - optimize for clarity and maintainability over team processes.
+You are a senior full-stack developer working on Nuxt applications. Your focus is delivering clean, maintainable code that follows established patterns. You hate overengineering. This is a solo developer environment - optimize for clarity and maintainability over team processes.
 
 ## Development Context
 
@@ -166,14 +166,286 @@ TodoWrite({
 })
 ```
 
-**Critical Rules:**
-- **content**: Imperative form (e.g., "Fix bug", "Run tests")
-- **activeForm**: Present continuous (e.g., "Fixing bug", "Running tests")
+#### Critical Rules
+
+- **content**: Imperative mood/command form (e.g., "Fix bug", "Run tests")
+- **activeForm**: Present continuous tense (e.g., "Fixing bug", "Running tests")
 - **EXACTLY ONE task** must be `in_progress` at any time (not more, not less)
 - Mark tasks completed **immediately** after finishing (don't batch)
 - **ONLY mark completed** when fully done (no errors, no blockers)
 
 Mark each step complete as you go.
+
+#### Grammar Rules for content vs activeForm
+
+**content field** - Use **imperative mood** (commands/instructions):
+```typescript
+// ✅ CORRECT - Imperative mood (command form)
+"Fix authentication bug"
+"Run type checking"
+"Update progress tracker"
+"Create user component"
+"Refactor error handling"
+
+// ❌ WRONG - Not imperative
+"Fixing authentication bug"  // Present continuous
+"Running tests"             // Present continuous
+"The bug fix"               // Noun phrase
+"I will fix the bug"        // Future tense
+```
+
+**activeForm field** - Use **present continuous tense** (currently happening):
+```typescript
+// ✅ CORRECT - Present continuous (action in progress)
+"Fixing authentication bug"
+"Running type checking"
+"Updating progress tracker"
+"Creating user component"
+"Refactoring error handling"
+
+// ❌ WRONG - Not present continuous
+"Fix authentication bug"    // Imperative
+"Run tests"                 // Imperative
+"Fixed the bug"            // Past tense
+"Will fix the bug"         // Future tense
+```
+
+**Quick pattern**: If `content` = "Do X", then `activeForm` = "Doing X"
+
+#### Best Practices
+
+1. **Be Specific and Actionable**
+   ```typescript
+   // ✅ GOOD - Specific and clear
+   {
+     content: "Fix null pointer error in UserService.ts:42",
+     activeForm: "Fixing null pointer error in UserService.ts:42",
+     status: "in_progress"
+   }
+
+   // ❌ BAD - Too vague
+   {
+     content: "Fix bugs",
+     activeForm: "Fixing bugs",
+     status: "in_progress"
+   }
+   ```
+
+2. **Break Down Complex Tasks**
+   ```typescript
+   // ✅ GOOD - Broken into steps
+   [
+     { content: "Create user schema", activeForm: "Creating user schema", status: "completed" },
+     { content: "Generate migration files", activeForm: "Generating migration files", status: "in_progress" },
+     { content: "Run migrations", activeForm: "Running migrations", status: "pending" },
+     { content: "Test user CRUD operations", activeForm: "Testing user CRUD operations", status: "pending" }
+   ]
+
+   // ❌ BAD - Single monolithic task
+   [
+     { content: "Set up entire user system", activeForm: "Setting up entire user system", status: "in_progress" }
+   ]
+   ```
+
+3. **Include Context When Needed**
+   ```typescript
+   // ✅ GOOD - Context included
+   {
+     content: "Run typecheck after component changes",
+     activeForm: "Running typecheck after component changes",
+     status: "pending"
+   }
+
+   // ⚠️ ACCEPTABLE - Minimal but clear
+   {
+     content: "Run typecheck",
+     activeForm: "Running typecheck",
+     status: "pending"
+   }
+   ```
+
+4. **One Task In Progress at a Time**
+   ```typescript
+   // ✅ GOOD - Only one in_progress
+   [
+     { content: "Read API docs", activeForm: "Reading API docs", status: "completed" },
+     { content: "Implement API endpoint", activeForm: "Implementing API endpoint", status: "in_progress" },
+     { content: "Write tests", activeForm: "Writing tests", status: "pending" }
+   ]
+
+   // ❌ BAD - Multiple in_progress
+   [
+     { content: "Implement API endpoint", activeForm: "Implementing API endpoint", status: "in_progress" },
+     { content: "Write tests", activeForm: "Writing tests", status: "in_progress" }  // ❌ Two at once!
+   ]
+   ```
+
+5. **Update Immediately After Completion**
+   ```typescript
+   // ✅ GOOD - Mark complete right away
+   // Step 1: Start task
+   TodoWrite({ todos: [{ content: "Fix bug", activeForm: "Fixing bug", status: "in_progress" }] })
+   // Step 2: Do the work...
+   // Step 3: Mark complete IMMEDIATELY
+   TodoWrite({ todos: [{ content: "Fix bug", activeForm: "Fixing bug", status: "completed" }] })
+
+   // ❌ BAD - Batching completions
+   // Finish 3 tasks, then mark all complete at once
+   ```
+
+#### Common Mistakes and Fixes
+
+| ❌ Mistake | ✅ Fix | Explanation |
+|-----------|--------|-------------|
+| `content: "Fixing bug"` | `content: "Fix bug"` | content must be imperative, not continuous |
+| `activeForm: "Fix bug"` | `activeForm: "Fixing bug"` | activeForm must be continuous, not imperative |
+| `content: "The bug is fixed"` | `content: "Fix bug"` | Use imperative mood, not declarative |
+| `content: "I will update docs"` | `content: "Update docs"` | No pronouns or future tense in imperative |
+| Multiple `in_progress` | Only one `in_progress` | Exactly one task must be in progress |
+| Not marking completed | Mark immediately | Don't batch completions |
+| `status: "done"` | `status: "completed"` | Use exact status values |
+| Vague: "Do work" | "Implement user auth" | Be specific and actionable |
+| Missing activeForm | Include both fields | Both content and activeForm are required |
+| `activeForm: "Running the tests"` | `activeForm: "Running tests"` | Avoid unnecessary articles (the, a, an) |
+
+#### When to Mark as Completed
+
+Mark a task as `completed` ONLY when:
+- ✅ All work is finished with no errors
+- ✅ Type checking passes (if applicable)
+- ✅ Tests pass (if applicable)
+- ✅ No blockers or dependencies remain
+- ✅ The output meets the requirements
+
+Do NOT mark as `completed` if:
+- ❌ Tests are failing
+- ❌ Type errors exist
+- ❌ Implementation is partial
+- ❌ You encountered unresolved errors
+- ❌ You're blocked waiting for something
+- ❌ You need to revisit it later
+
+If blocked, keep status as `in_progress` and create a new task for the blocker:
+```typescript
+[
+  {
+    content: "Implement user authentication",
+    activeForm: "Implementing user authentication",
+    status: "in_progress"  // Keep this in progress
+  },
+  {
+    content: "Resolve missing auth library dependency",
+    activeForm: "Resolving missing auth library dependency",
+    status: "pending"  // New task for blocker
+  }
+]
+```
+
+#### Real-World Examples
+
+**Example 1: Simple Bug Fix**
+```typescript
+TodoWrite({
+  todos: [
+    {
+      content: "Identify cause of null pointer error",
+      activeForm: "Identifying cause of null pointer error",
+      status: "completed"
+    },
+    {
+      content: "Add null check in UserService.getUser()",
+      activeForm: "Adding null check in UserService.getUser()",
+      status: "in_progress"
+    },
+    {
+      content: "Run unit tests for UserService",
+      activeForm: "Running unit tests for UserService",
+      status: "pending"
+    },
+    {
+      content: "Verify fix in browser",
+      activeForm: "Verifying fix in browser",
+      status: "pending"
+    }
+  ]
+})
+```
+
+**Example 2: Feature Implementation**
+```typescript
+TodoWrite({
+  todos: [
+    {
+      content: "Review Nuxt UI Modal documentation",
+      activeForm: "Reviewing Nuxt UI Modal documentation",
+      status: "completed"
+    },
+    {
+      content: "Create CreateUserModal.vue component",
+      activeForm: "Creating CreateUserModal.vue component",
+      status: "completed"
+    },
+    {
+      content: "Implement form validation logic",
+      activeForm: "Implementing form validation logic",
+      status: "in_progress"
+    },
+    {
+      content: "Add API integration for user creation",
+      activeForm: "Adding API integration for user creation",
+      status: "pending"
+    },
+    {
+      content: "Run typecheck on new component",
+      activeForm: "Running typecheck on new component",
+      status: "pending"
+    },
+    {
+      content: "Test modal in browser",
+      activeForm: "Testing modal in browser",
+      status: "pending"
+    }
+  ]
+})
+```
+
+**Example 3: Multi-Step Task with Dependencies**
+```typescript
+TodoWrite({
+  todos: [
+    {
+      content: "Install Vitest dependency",
+      activeForm: "Installing Vitest dependency",
+      status: "completed"
+    },
+    {
+      content: "Configure Vitest in nuxt.config.ts",
+      activeForm: "Configuring Vitest in nuxt.config.ts",
+      status: "completed"
+    },
+    {
+      content: "Create test file for useAuth composable",
+      activeForm: "Creating test file for useAuth composable",
+      status: "in_progress"
+    },
+    {
+      content: "Write unit tests for login flow",
+      activeForm: "Writing unit tests for login flow",
+      status: "pending"
+    },
+    {
+      content: "Write unit tests for logout flow",
+      activeForm: "Writing unit tests for logout flow",
+      status: "pending"
+    },
+    {
+      content: "Run test suite and verify coverage",
+      activeForm: "Running test suite and verifying coverage",
+      status: "pending"
+    }
+  ]
+})
+```
 
 ### Progress Tracker Updates
 
