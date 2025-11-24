@@ -10,10 +10,11 @@
 
 | Metric | Status |
 |--------|--------|
-| **Total Optimizations** | 5 / 10 |
+| **Total Optimizations** | 7 / 10 |
 | **Priority Items Complete** | 4 / 4 |
 | **Agents Enhanced** | 14 / 14 |
 | **New Agents Created** | 1 / 1 |
+| **Phase 2 Complete** | 3 / 3 ✅ |
 | **Slash Commands Updated** | 0 / 2 |
 
 ---
@@ -95,7 +96,7 @@
 
 ## Phase 2: Medium Impact, Medium Effort
 
-**Progress**: 2/3 tasks (67%)
+**Progress**: 3/3 tasks (100%) ✅ COMPLETE
 
 ### 2.1 Add Self-Correction Protocol to Agents [x] ✅
 - [x] Design self-correction pattern
@@ -131,14 +132,24 @@
 
 ---
 
-### 2.3 Add Context Awareness Reporting
-- [ ] Add "Context Awareness" section to CLAUDE.md
-- [ ] Define reporting format for end of tasks
-- [ ] Include session info template
-- [ ] Add guidance on when clearing helps vs hurts
-- [ ] Emphasize user control over clearing
+### 2.3 Add Context Awareness Reporting [x] ✅
+- [x] Add "Context Awareness & Session Reporting" section to CLAUDE.md
+- [x] Define reporting format for end of tasks
+- [x] Include session info template
+- [x] Add guidance on when clearing helps vs hurts
+- [x] Emphasize user control over clearing
 
-**Target location**: CLAUDE.md (Context Clearing section, ~line 265)
+**Target location**: CLAUDE.md (line 537-752)
+**Completed**: Comprehensive context awareness section with:
+- Session Context Report template with token usage, files, tools, duration tracking
+- Context Quality assessment (relevant context, bloat level, accumulated state)
+- Recommendation system (Safe to continue / Consider clearing / Recommend clearing)
+- "When Context Clearing HELPS" - 5 scenarios with examples (high tokens, contamination, testing docs, task boundaries, agent changes)
+- "When Context Clearing HURTS" - 5 scenarios with examples (low tokens, coupled tasks, debugging, valuable context, rapid iteration)
+- User Control section emphasizing agent reports but user decides
+- Example report with real metrics and reasoning
+- Updated Context Clearing Workflow with Session Report integration
+- Complete example flow showing report → decision → handoff
 
 ---
 
@@ -276,3 +287,32 @@
   - Included troubleshooting section for deadlocks, stale locks, and conflicts
   - Documented when to use vs skip state-manager (complexity assessment)
 - **Status**: Phase 2 progress: 2/3 tasks (67%)
+- **Completed**: Task 2.3 - Add Context Awareness Reporting
+  - Added comprehensive "Context Awareness & Session Reporting" section to CLAUDE.md (lines 537-752)
+  - Created Session Context Report template with detailed metrics tracking:
+    - Token usage (current/max/percentage)
+    - Files read/modified with counts and lists
+    - Tools invoked with counts
+    - Session duration estimation
+  - Built Context Quality assessment framework (relevant context, bloat level, accumulated state)
+  - Designed 3-tier recommendation system: ✅ Safe to continue / ⚠️ Consider clearing / 🔴 Recommend clearing
+  - Documented "When Context Clearing HELPS" with 5 scenarios:
+    1. High token usage (>70%)
+    2. Context contamination (mixed/conflicting info)
+    3. Testing workflow documentation
+    4. Natural task boundaries
+    5. Agent specialization changes
+  - Documented "When Context Clearing HURTS" with 5 scenarios:
+    1. Low token usage (<30%)
+    2. Tightly coupled tasks
+    3. Active debugging sessions
+    4. Rich accumulated context is valuable
+    5. Rapid iteration on single feature
+  - Created User Control section emphasizing:
+    - Agent reports honestly but user decides
+    - NEVER automatically clear context
+    - NEVER insist on clearing if user wants to continue
+  - Included complete example report with real metrics (22.6% token usage example)
+  - Updated Context Clearing Workflow to integrate Session Report as Step 2
+  - Provided full example flow from report → decision → handoff
+- **Status**: Phase 2 COMPLETE (3/3 tasks) ✅

@@ -534,26 +534,190 @@ git push
 4. **Quality**: Type checking catches errors early
 5. **Communication**: Clear commit messages document decisions
 
-### Context Clearing Between Tasks
+### Context Awareness & Session Reporting
 
-**IMPORTANT**: To ensure fresh context and test workflow documentation, clear context after each task completion.
+**IMPORTANT**: Agents must report session context at the end of each task to help users make informed decisions about context management.
+
+#### Session Info Template
+
+At the end of EVERY task, agents MUST report session context using this template:
+
+```markdown
+## 📊 Session Context Report
+
+**Task Completed**: [Task X.Y - Description]
+**Commit**: [commit hash or "committed"]
+**Progress Tracker**: Updated ✅
+
+### Context Status
+- **Token Usage**: [current]/[max] ([percentage]% used)
+- **Files Read**: [count] ([list key files])
+- **Files Modified**: [count] ([list files])
+- **Tools Invoked**: [count] ([list most-used tools])
+- **Session Duration**: [estimate based on conversation length]
+
+### Context Quality
+- **Relevant Context**: [High/Medium/Low] - [brief explanation]
+- **Context Bloat**: [None/Minimal/Moderate/High] - [brief explanation]
+- **Accumulated State**: [list any state that might affect future tasks]
+
+### Recommendation
+- ✅ **Safe to continue** - Context is clean and relevant
+- ⚠️ **Consider clearing** - [reason: token bloat/mixed contexts/etc.]
+- 🔴 **Recommend clearing** - [reason: high token usage/confusing state/etc.]
+
+[Provide reasoning for recommendation]
+```
+
+#### When Context Clearing HELPS
+
+**✅ Clear context when:**
+
+1. **High token usage** (>70% budget used)
+   - Prevents hitting token limits mid-task
+   - Ensures fresh context for complex tasks
+   - Example: After large refactoring tasks
+
+2. **Context contamination** (mixed or conflicting information)
+   - Multiple unrelated features discussed
+   - Experimental code that was abandoned
+   - Wrong approaches tried before correct solution
+   - Example: After debugging session with many failed attempts
+
+3. **Testing workflow documentation**
+   - Validating that PROGRESS_TRACKER.md is complete
+   - Ensuring new agents can pick up tasks
+   - Simulating multi-agent handoffs
+   - Example: End of each task in a workflow optimization project
+
+4. **Natural task boundaries**
+   - Completed a major feature or phase
+   - Switching to different domain/layer
+   - Moving from implementation to testing
+   - Example: After completing Phase 1, before starting Phase 2
+
+5. **Agent specialization changes**
+   - Switching from code generation to review
+   - Moving from backend to frontend work
+   - Handoff from architect to implementer
+   - Example: After design phase, before implementation
+
+**Context clearing in these scenarios:**
+- Reduces cognitive load for next agent
+- Prevents stale information from influencing decisions
+- Ensures documentation is the single source of truth
+- Improves response quality by focusing on current task
+
+#### When Context Clearing HURTS
+
+**❌ DON'T clear context when:**
+
+1. **Low token usage** (<30% budget used)
+   - Plenty of room for more work
+   - Clearing adds unnecessary friction
+   - Current context is still valuable
+
+2. **Tightly coupled tasks**
+   - Next task directly depends on current implementation
+   - Need to reference just-written code
+   - Sequential bug fixes in same area
+   - Example: Write component → immediately write tests for that component
+
+3. **Active debugging session**
+   - In the middle of investigating an issue
+   - Need to maintain understanding of problem
+   - Multiple hypotheses being tested
+   - Example: Tracking down a complex race condition
+
+4. **Rich accumulated context is valuable**
+   - Discovered important patterns/insights
+   - Built mental model of complex system
+   - Learned about edge cases and gotchas
+   - Example: Deep dive into authentication flow
+
+5. **Rapid iteration on single feature**
+   - Making quick adjustments
+   - Responding to immediate feedback
+   - Tweaking design/implementation
+   - Example: Refining UI component based on design feedback
+
+**Preserving context in these scenarios:**
+- Maintains momentum and efficiency
+- Leverages accumulated understanding
+- Avoids re-reading same files repeatedly
+- Reduces time to complete related tasks
+
+#### User Control & Decision Making
+
+**CRITICAL**: The user ALWAYS has final control over context clearing.
+
+**Agent responsibilities:**
+1. **Report** context status honestly and accurately
+2. **Recommend** based on objective criteria (tokens, coherence, task boundaries)
+3. **Respect** user's decision to continue or clear
+4. **NEVER** automatically clear context
+5. **NEVER** insist on clearing if user wants to continue
+
+**Example Agent Report:**
+
+```markdown
+## 📊 Session Context Report
+
+**Task Completed**: Task 1.3 - Add auto-fix to code-smell-detector
+**Commit**: ef3a891
+**Progress Tracker**: Updated ✅
+
+### Context Status
+- **Token Usage**: 45,231/200,000 (22.6% used)
+- **Files Read**: 12 (code-smell-detector.md, TASK_TRACKER.md, examples/*.ts)
+- **Files Modified**: 2 (code-smell-detector.md, TASK_TRACKER.md)
+- **Tools Invoked**: 18 (Read: 8, Edit: 4, Grep: 3, Bash: 3)
+- **Session Duration**: ~15 minutes
+
+### Context Quality
+- **Relevant Context**: Medium - Focused on code-smell-detector agent, some exploration of related patterns
+- **Context Bloat**: Minimal - All context relates to current task or supporting research
+- **Accumulated State**: Understanding of agent prompt structure, auto-fix patterns, bash script safety patterns
+
+### Recommendation
+✅ **Safe to continue** - Token usage is low, context is coherent and relevant. Next task (1.4 - git commit templates) benefits from understanding of agent prompt structure established in this session.
+
+However, if you want to test the workflow handoff process, this is a good natural breakpoint.
+```
+
+**User options after seeing report:**
+```bash
+# Option 1: Continue with context (recommended by agent)
+continue with Task 1.4
+
+# Option 2: Clear despite recommendation (user's choice)
+/clear
+
+# Option 3: Ask for more details
+explain why continuing is safe here
+```
+
+#### Context Clearing Workflow
+
+When context clearing is recommended/chosen:
 
 **Agent responsibilities:**
 1. Complete all 5 workflow steps
-2. Announce: **"✅ Task X.Y complete. Ready for context clear."**
-3. Say the code word (found at the top of CLAUDE.md)
-4. **End with handoff information:**
+2. Provide Session Context Report (above)
+3. Announce: **"✅ Task X.Y complete. Ready for context clear."**
+4. Say the code word (found at the top of CLAUDE.md)
+5. **End with handoff information:**
    - State the progress tracker location (e.g., "Progress tracked in: `/docs/PROGRESS_TRACKER.md`")
    - Provide a concise, actionable prompt (1-2 sentences) for the next agent
    - Format: "Progress tracked in: `[path]` | continue with: [prompt]"
-5. STOP and wait for user action
-6. Do NOT continue to next task automatically
+6. STOP and wait for user action
+7. Do NOT continue to next task automatically
 
 **Code word verification**: At the end of EVERY task completion, the agent MUST say the code word stated at the top of this file. This proves the agent has read CLAUDE.md and is following instructions.
 
 **User action:**
 ```bash
-# After agent announces completion
+# After agent announces completion and provides report
 /clear
 
 # Then in fresh session
@@ -577,6 +741,7 @@ continue with next task
 **Example flow:**
 ```
 Agent: Completes Task 1.5, commits
+Agent: [Provides Session Context Report]
 Agent: "✅ Task 1.5 complete. Ready for context clear."
 Agent: "Yesterday" (code word)
 Agent: "Progress tracked in: `/docs/PROGRESS_TRACKER.md` | continue with: Task 1.6 - run migrations for the discussion layer."
