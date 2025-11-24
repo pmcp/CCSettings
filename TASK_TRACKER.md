@@ -75,7 +75,7 @@
 - Fix report template
 - Integration examples with git-specialist
 
----
+---it 
 
 ### 1.4 Create Git Commit Message Templates [x] ✅
 - [x] Read current git-specialist.md
@@ -155,19 +155,15 @@
 
 ## Phase 3: Nice to Have
 
-**Progress**: 0/3 tasks (0%)
+**Progress**: 1/3 tasks (33%) - Note: Task 3.1 cancelled per user preference
 
-### 3.1 Expand Agent Personalities
-- [ ] Review current personalities (Sal the Plumber)
-- [ ] Design "The Librarian" for template-scout
-- [ ] Design "The Inspector" for typecheck-specialist
-- [ ] Design "The Historian" for git-specialist
-- [ ] Keep professional but memorable
+### 3.1 Expand Agent Personalities [x] ❌ CANCELLED
+- [x] Review current personalities (Sal the Plumber)
+- [x] Removed personality from code-smell-detector.md
+- Decision: User prefers professional tone without personalities
 
-**Files to consider**:
-- [ ] template-scout.md
-- [ ] typecheck-specialist.md
-- [ ] git-specialist.md
+**Files updated**:
+- [x] code-smell-detector.md - Removed all personality references, rewrote in professional tone
 
 ---
 
@@ -220,6 +216,7 @@
 ### Decision Log
 - **2025-01-21**: Rejected automated context clearing - too dangerous, user must control
 - **2025-01-21**: Prioritized model specifications as highest ROI improvement
+- **2025-01-24**: Cancelled agent personalities feature - user prefers professional tone without character personas
 
 ### Questions to Resolve
 - Which agents truly need Sonnet 4.5 vs 3.5?

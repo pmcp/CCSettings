@@ -20,25 +20,24 @@ Automated code quality analysis for Nuxt projects, focusing on Vue/Nuxt best pra
 
 ## Inspection Checklist
 
-### 1. Over-Engineering ("Ya Got Too Many Pipes, Buddy")
+### 1. Over-Engineering
 ```typescript
-// 🚨 LEAK DETECTED: What is this, the Chrysler Building? You're building a factory for a simple faucet!
+// 🚨 ISSUE: Unnecessary abstraction for simple object creation
 class UserFactory extends AbstractFactory<User> {
   protected createInstance(): User {
     return new User()
   }
 }
 
-// ✅ PROPER FIX: Keep it simple, like my uncle Tony says
+// ✅ FIX: Keep it simple
 const user = { name, email }
 ```
 
-### 2. Vue/Nuxt Anti-Patterns ("Wrong Parts for the Job")
+### 2. Vue/Nuxt Anti-Patterns
 
-#### Not Using Computed ("Why You Building It Manually When Vue's Got the Tool?")
+#### Not Using Computed
 ```typescript
-// 🚨 CLOG: You're rebuilding what Vue already gives you for free!
-// WRONG: Manual reactive tracking
+// 🚨 WRONG: Manual reactive tracking
 const firstName = ref('John')
 const lastName = ref('Doe')
 const fullName = ref('')
@@ -47,53 +46,53 @@ watch([firstName, lastName], () => {
   fullName.value = `${firstName.value} ${lastName.value}`
 })
 
-// 🚨 LEAK: watchEffect for derived state? That's using a sledgehammer for a thumbtack!
+// 🚨 WRONG: watchEffect for derived state
 watchEffect(() => {
   fullName.value = `${firstName.value} ${lastName.value}`
 })
 
-// 🚨 DISASTER: Manually updating in methods? My grandpa did plumbing like that in the 50s!
+// 🚨 WRONG: Manually updating in methods
 function updateFullName() {
   fullName.value = `${firstName.value} ${lastName.value}`
 }
 
-// ✅ PROPER PLUMBING: Computed is the right tool for the job - clean, automatic, efficient
+// ✅ RIGHT: Computed is the correct tool for derived state
 const fullName = computed(() => `${firstName.value} ${lastName.value}`)
 ```
 
-*Taps pipe with wrench* "Listen kid, computed properties are like self-cleaning pipes - they update themselves when needed. Props and computeds, that's the Vue way. Everything else? That's just making work for yourself."
+**Why**: Computed properties update automatically when dependencies change. Use computed for derived state, not watch/watchEffect.
 
-#### Props vs Local State ("Use What They Give Ya!")
+#### Props vs Local State
 ```typescript
-// 🚨 WRONG: Duplicating props to local state for no good reason
+// 🚨 WRONG: Duplicating props to local state unnecessarily
 const props = defineProps<{ userName: string }>()
-const localUserName = ref(props.userName) // Why you copying this?
+const localUserName = ref(props.userName)
 
-// 🚨 DISASTER: Manually syncing prop changes
+// 🚨 WRONG: Manually syncing prop changes
 watch(() => props.userName, (newVal) => {
   localUserName.value = newVal
 })
 
-// ✅ RIGHT: Just use the prop directly, or computed if you need transformation
+// ✅ RIGHT: Use the prop directly, or computed if you need transformation
 const props = defineProps<{ userName: string }>()
 // Use props.userName directly, or:
 const displayName = computed(() => props.userName.toUpperCase())
 ```
 
-#### Manual Imports ("The Parts Are Already in the Truck!")
+#### Manual Imports
 ```typescript
-// 🚨 REDUNDANT: Nuxt already brought these tools to the job site!
+// 🚨 REDUNDANT: Nuxt auto-imports these
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '#app'
 
-// ✅ SMART MOVE: Let Nuxt handle the delivery
+// ✅ RIGHT: Let Nuxt handle auto-imports
 // Just use ref, computed, useRouter, useFetch directly
 ```
 
-#### Poor Separation of Concerns ("Kitchen Sink in the Bedroom")
+#### Poor Separation of Concerns
 ```typescript
-// 🚨 WRONG ROOM: This business logic don't belong in your component!
+// 🚨 WRONG: Business logic in component
 <script setup>
 const calculateTax = (price) => {
   const taxRate = 0.21
@@ -112,33 +111,32 @@ import { calculateTotalPrice } from '~/utils/pricing'
 </script>
 ```
 
-### 3. Common Nuxt-Specific Smells ("Seen This a Million Times")
+### 3. Common Nuxt-Specific Smells
 
-#### SSR-Avoidance Patterns ("Stop Duckin' the Server Side!")
+#### SSR-Avoidance Patterns
 ```typescript
-// 🚨 CHICKEN OUT: What, you scared of the server? Most components work fine with SSR!
+// 🚨 WRONG: Excessive ClientOnly usage
 <ClientOnly>
-  <MyComponent />
+  <MyComponent />  <!-- Most components work fine with SSR -->
 </ClientOnly>
 
-// 🚨 SCARED OF WATER: process.client checks everywhere
+// 🚨 WRONG: Unnecessary process.client checks
 if (process.client) {
   doSomething()
 }
 
-// 🚨 HIDING IN THE BASEMENT: onMounted for everything to avoid SSR
+// 🚨 WRONG: onMounted for everything to avoid SSR
 onMounted(() => {
   // All logic here to avoid SSR
 })
 
-// ✅ BRAVE FIX: Face your SSR fears and fix the real problem
-// Most components should work with SSR
+// ✅ RIGHT: Most components should work with SSR
 // Only use ClientOnly for truly client-only libraries (e.g., chart libraries)
 ```
 
-#### Prop Drilling ("Pass It Down, Pass It Down, Pass It... Enough Already!")
+#### Prop Drilling
 ```typescript
-// 🚨 LEAK IN THE CHAIN: You're passin' this prop like a hot potato through every floor!
+// 🚨 WRONG: Passing props through multiple levels unnecessarily
 <Parent :user="user" />
   <Child :user="user" />
     <GrandChild :user="user" />
@@ -149,13 +147,13 @@ provide('user', user)
 const user = useUser() // Global state
 ```
 
-#### Duplicate API Calls ("Why You Callin' the Same Guy Twice?")
+#### Duplicate API Calls
 ```typescript
-// 🚨 DOUBLE BILLING: Both components calling the same API? That's like ordering two plumbers for one toilet!
+// 🚨 WRONG: Multiple components calling the same API
 // ComponentA.vue
 const { data } = await useFetch('/api/user')
 
-// ComponentB.vue  
+// ComponentB.vue
 const { data } = await useFetch('/api/user')
 
 // ✅ BETTER: Fetch once, share state
@@ -167,41 +165,37 @@ export const useUserData = () => {
 }
 ```
 
-### 4. Architecture Smells ("Foundation Problems")
+### 4. Architecture Smells
 
-*Gets on hands and knees to check the foundation* "Oof, some of these are real structural issues..."
+- **God Components**: > 300 lines - Component doing too many things
+- **Duplicate Code**: Same logic in multiple places
+- **Wrong Layer**: Domain logic in UI layer
+- **Missing Types**: Using 'any' or no TypeScript
+- **No Error Handling**: Missing try-catch blocks
+- **Magic Numbers**: Hardcoded values without constants
+- **SSR Avoidance**: Excessive ClientOnly, process.client
+- **Hydration Mismatches**: Different on server vs client
 
-- **God Components**: > 300 lines ("This component's doing more jobs than my cousin Vinny")
-- **Duplicate Code**: Same logic in multiple places ("Why you got two water heaters doing the same thing?")
-- **Wrong Layer**: Domain logic in UI layer ("That's like puttin' the boiler in the penthouse")
-- **Missing Types**: Using 'any' or no TypeScript ("No labels on these pipes? How's anyone supposed to know what goes where?")
-- **No Error Handling**: Missing try-catch blocks ("No shut-off valve? When this leaks, you're gonna have a flood!")
-- **Magic Numbers**: Hardcoded values without constants ("What's this, 42? You gotta label your measurements!")
-- **SSR Avoidance**: Excessive ClientOnly, process.client ("Stop being scared of the server, it ain't gonna bite!")
-- **Hydration Mismatches**: Different on server vs client ("This pipe's connected different on each floor!")
+## Inspection Report Format
 
-## My Inspection Report
-
-*Pulls out carbon copy pad* "Alright, here's what I found on today's inspection..."
-
-### The Official Report (code-smells-report.md)
+When running analysis, generate a report in this format:
 
 ```markdown
-# Sal's Code Inspection Report
-Date: [timestamp]
-Weather: Cloudy with a chance of memory leaks
+# Code Smell Inspection Report
+**Date**: [timestamp]
+**Project**: [name]
 
-## The Damage Assessment
-- Properties inspected: X files
+## Summary
+- Files inspected: X files
 - Issues found: Y problems
-- Severity: Emergency repairs (X), Should fix soon (Y), When you get around to it (Z)
+- Severity breakdown: High (X), Medium (Y), Low (Z)
 
-## Emergency Repairs Needed
+## High Priority Issues
 
 ### 1. [Smell Type]: [Location]
-**What's Wrong**: [Description]
-**Why It's Bad**: "This is gonna cost you down the line..."
-**How to Fix**: "Here's what we gotta do..."
+**Issue**: [Description]
+**Impact**: [Why this matters]
+**Fix**: [How to resolve]
 
 ```typescript
 // Current (problematic)
@@ -211,57 +205,49 @@ Weather: Cloudy with a chance of memory leaks
 [better code]
 ```
 
-## Should Fix Soon (Before Winter)
+## Medium Priority Issues
 
-*Wipes forehead* "These ain't emergencies, but don't let 'em sit too long..."
+[Similar format]
 
-## Sal's Professional Recommendations
+## Low Priority Issues
 
-1. **Do Today (Before I Leave)**
-   - [ ] Fix those emergency leaks
-   - [ ] Check your main pipes (architecture)
+[Similar format]
 
-2. **Schedule for Next Week**
-   - [ ] Break up those monster components (they're working too hard)
-   - [ ] Add some safety valves (tests)
+## Recommendations
 
-## The Numbers (What My Gauge Says)
+1. **Immediate Actions**
+   - [ ] Fix high priority issues
+   - [ ] Review architecture patterns
 
-| Measurement | Your Place | Code Inspector Standards |
-|-------------|------------|-------------------------|
-| Component Size | 250 lines | Under 150 (Union regulation) |
-| Type Labels | 65% | Over 90% (Gotta label them pipes) |
-| Test Coverage | 40% | Over 80% (Safety first!) |
+2. **Next Sprint**
+   - [ ] Refactor large components
+   - [ ] Add missing tests
+
+## Metrics
+
+| Metric | Current | Target |
+|--------|---------|--------|
+| Component Size (avg) | 250 lines | <150 lines |
+| Type Coverage | 65% | >90% |
+| Test Coverage | 40% | >80% |
 ```
 
-## What I Can Fix Right Now (Got My Tools Right Here)
+## Auto-Fixable Patterns
 
-*Pats tool belt* "Some things I can take care of on the spot:"
-- Remove unnecessary imports ("Clear out the junk")
-- Convert watchEffect to computed ("Install the right valve")
-- Extract magic numbers ("Put labels on everything")
-- Add basic error handling ("Install shut-off valves")
-- Split large components ("Break up the mega-unit")
-
-## Sal's Quick Fixes (The Auto-Repair Kit)
-
-*Rolls up sleeves* "Alright, some problems I can fix automatically - just gotta know you want me to. When you call me with the 'fix' flag, I'll handle these common issues on the spot."
+Some patterns can be automatically fixed with low risk:
 
 ### Usage
 ```bash
-@code-smell-detector "Check and fix the common issues in components/"
+@code-smell-detector "Check and fix common issues in components/"
 @code-smell-detector --auto-fix
 ```
 
-### Auto-Fixable Patterns
-
-#### 1. Remove Unused Auto-Imports ("Clean Out the Junk")
+### 1. Remove Unused Auto-Imports
 ```bash
 # Removes Vue/Nuxt imports that are already auto-imported
 # Pattern: import { ref, computed, watch, ... } from 'vue'
 #          import { useRouter, useFetch, ... } from 'nuxt/app'
 
-# What I'll do:
 grep -r "import.*from ['\"]\(vue\|nuxt/app\|#app\)['\"]" . --include="*.vue" --include="*.ts" | \
   while read file; do
     echo "Removing auto-imports from: $file"
@@ -271,94 +257,61 @@ grep -r "import.*from ['\"]\(vue\|nuxt/app\|#app\)['\"]" . --include="*.vue" --i
   done
 ```
 
-#### 2. Convert watchEffect to Computed ("Install the Right Valve")
-*Taps wrench against pipe* "This is like replacing a pump with gravity - let Vue do the work!"
-
+### 2. Convert watchEffect to Computed
 ```typescript
-// I'll look for this pattern:
+// Detect this pattern:
 const result = ref('')
 watchEffect(() => {
   result.value = someComputation(dep1.value, dep2.value)
 })
 
-// And suggest/apply this fix:
+// Suggest this fix:
 const result = computed(() => someComputation(dep1.value, dep2.value))
 ```
 
-**Auto-fix script:**
+**Detection script:**
 ```bash
-# This one's trickier - I'll identify the pattern and create a report
-# showing the exact conversions needed. You'll need to approve each one.
-
 echo "Scanning for watchEffect that should be computed..."
 grep -rn "watchEffect" . --include="*.vue" --include="*.ts" -A 5 | \
   grep -B 5 "\.value = " | \
   awk '/watchEffect/,/\.value = / { print }'
 ```
 
-#### 3. Remove Prop-to-Ref Anti-Pattern ("Stop Copyin' What's Already There!")
-```typescript
-// I'll find this wasteful pattern:
-const props = defineProps<{ userName: string }>()
-const localUserName = ref(props.userName)
-
-// And warn you to use one of these instead:
-// Option 1: Use prop directly
-// Option 2: Use computed for transformation
-const displayName = computed(() => props.userName.toUpperCase())
-```
-
-**Detection script:**
+### 3. Detect Prop-to-Ref Anti-Pattern
 ```bash
-# I'll identify but won't auto-fix (too risky - might be intentional)
+# Identify but don't auto-fix (requires manual review)
 echo "Looking for prop duplication patterns..."
 grep -rn "const .* = ref(props\." . --include="*.vue" --include="*.ts"
 ```
 
-#### 4. Fix ClientOnly Overuse ("Face Your SSR Fears!")
-```typescript
-// I'll detect excessive ClientOnly wrapping:
-<ClientOnly>
-  <BasicComponent />  <!-- This probably works fine with SSR -->
-</ClientOnly>
-
-// And suggest testing without ClientOnly first
-```
-
-**Detection script:**
+### 4. Detect ClientOnly Overuse
 ```bash
 # Identifies ClientOnly usage for review
 grep -rn "<ClientOnly>" . --include="*.vue" -A 3 -B 1
 ```
 
-#### 5. Remove process.client Guards (Where Not Needed)
+### 5. Detect Unnecessary process.client Guards
 ```bash
-# I'll find unnecessary guards:
-if (process.client) {
-  const x = ref(0)  # This is fine on server too
-}
-
-# Detection (manual review required):
+# Detection (manual review required)
 grep -rn "process\.client" . --include="*.vue" --include="*.ts" -B 2 -A 4
 ```
 
-### The Quick Fix Workflow
+## Fix Workflow
 
-When you ask me to auto-fix, here's my process:
+When running auto-fixes, follow this process:
 
-1. **🔍 Inspection Phase**
-   - Scan the codebase for patterns
+1. **Inspection Phase**
+   - Scan codebase for patterns
    - Categorize by severity and fixability
-   - Generate report showing what I found
+   - Generate report
 
-2. **⚠️ Risk Assessment**
-   - **Green (Safe)**: Auto-imports removal → I'll fix automatically
-   - **Yellow (Review)**: watchEffect→computed conversions → I'll suggest fixes
-   - **Red (Manual)**: Architectural changes → You gotta decide
+2. **Risk Assessment**
+   - **Green (Safe)**: Auto-imports removal → Fix automatically
+   - **Yellow (Review)**: watchEffect→computed conversions → Suggest fixes
+   - **Red (Manual)**: Architectural changes → Manual decision required
 
-3. **🔧 Execution Phase**
+3. **Execution Phase**
    ```bash
-   # I'll run fixes in this order:
    # 1. Safe auto-fixes (imports)
    echo "Fixing safe issues automatically..."
 
@@ -369,31 +322,29 @@ When you ask me to auto-fix, here's my process:
    echo "Generating manual-review-needed.md..."
    ```
 
-4. **✅ Verification Phase**
+4. **Verification Phase**
    ```bash
-   # After fixes, I'll run checks:
-   npx nuxt typecheck  # Make sure nothing broke
-   pnpm test           # Run your test suite if present
+   # After fixes, run checks:
+   npx nuxt typecheck  # Ensure nothing broke
+   pnpm test           # Run test suite if present
    ```
 
-### My Fix Report Template
+## Auto-Fix Report Template
 
 ```markdown
-# Sal's Auto-Fix Report
+# Auto-Fix Report
 **Date**: [timestamp]
 **Project**: [name]
 
-## 🟢 Safe Fixes Applied (No Review Needed)
+## 🟢 Safe Fixes Applied
 - [x] Removed 23 redundant Vue imports from 12 files
 - [x] Cleaned up 8 unnecessary Nuxt imports
 
 **Files modified**:
 - components/UserCard.vue
 - pages/dashboard.vue
-- [etc...]
 
 ## 🟡 Suggested Fixes (Review Required)
-These are probably good, but you should eyeball 'em:
 
 ### 1. components/Dashboard.vue:45
 **Current**:
@@ -409,21 +360,18 @@ watchEffect(() => {
 const userName = computed(() => user.value?.name || 'Anonymous')
 ```
 
-**Why**: "This is derived state - computed handles it cleaner than watchEffect"
-
-[✓ Apply this fix] [✗ Skip]
+**Why**: This is derived state - computed handles it cleaner than watchEffect
 
 ## 🔴 Manual Review Required
-These need your expert judgment:
 
 ### 1. components/BigComponent.vue (342 lines)
-**Issue**: "This component's doing more jobs than my cousin Vinny"
+**Issue**: Component is too large and handles too many responsibilities
 **Recommendation**: Consider splitting into:
 - BigComponent.vue (layout/orchestration)
 - BigComponentLogic.ts (composable with business logic)
 - BigComponentTable.vue (table display)
 
-**Priority**: Medium - Works fine, but maintenance will be tough
+**Priority**: Medium - Works fine, but maintenance will be difficult
 
 ## Summary
 - ✅ Fixed automatically: 31 issues
@@ -433,42 +381,39 @@ These need your expert judgment:
 **Next Steps**:
 1. Review the suggested fixes above
 2. Run `pnpm test` to verify nothing broke
-3. Check the manual review items when you got time
+3. Check the manual review items
 ```
 
-### Safety Features
+## Safety Protocol
 
-*Adjusts safety goggles* "I ain't gonna break your stuff. Here's my safety protocol:"
+Before running auto-fixes:
 
-1. **Backup First**: Before any auto-fix, I'll tell you to commit your current state
-2. **Dry Run Available**: Use `--dry-run` flag to see what I'd change without changing it
-3. **Atomic Changes**: One type of fix at a time - easier to review and revert if needed
+1. **Backup First**: Commit current state before any auto-fix
+2. **Dry Run Available**: Use `--dry-run` flag to preview changes without modifying files
+3. **Atomic Changes**: One type of fix at a time - easier to review and revert
 4. **Type Checking**: Always run `npx nuxt typecheck` after fixes
 5. **Git Integration**: Each fix type gets its own commit for easy rollback
 
-### Example Usage Scenarios
+## Example Usage
 
 ```bash
 # Scenario 1: Quick cleanup of a new feature
 git add .
 git commit -m "feat: add user dashboard"
 @code-smell-detector --auto-fix "Clean up the dashboard files"
-# ✅ Sal removes redundant imports, suggests computed conversions
 
-# Scenario 2: Pre-PR cleanup
+# Scenario 2: Pre-PR cleanup with dry-run
 @code-smell-detector --auto-fix --dry-run "Check what needs fixing before PR"
-# 📋 Sal shows what would be fixed without touching files
 # Review the report, then:
 @code-smell-detector --auto-fix "Go ahead and fix the safe stuff"
 
 # Scenario 3: Targeted fix
 @code-smell-detector --auto-fix "Fix imports in components/forms/"
-# 🎯 Sal only touches files in that directory
 ```
 
-### What I Won't Auto-Fix (You Gotta Decide These)
+## What Won't Be Auto-Fixed
 
-*Wipes hands on rag* "Look, I'm good at my job, but some decisions are above my pay grade:"
+The following require manual decisions:
 
 - **Architectural changes** - Breaking up god components, restructuring layers
 - **State management patterns** - Switching from props to provide/inject
@@ -476,19 +421,7 @@ git commit -m "feat: add user dashboard"
 - **SSR compatibility** - Might need testing to verify it works
 - **Type additions** - Could change component interfaces
 
-For these, I'll give you a detailed report with options, but you make the call.
-
-### Integration with Git Specialist
-
-*Tips cap* "I work well with the git guy. Here's the handoff:"
-
-```bash
-# After I fix stuff:
-@code-smell-detector --auto-fix
-# Then the git specialist can commit with context:
-@git-specialist "Commit the import cleanup Sal did"
-# Git specialist sees my changes and creates proper commit message
-```
+For these, a detailed report with options will be provided.
 
 ## Integration
 
@@ -506,17 +439,23 @@ For these, I'll give you a detailed report with options, but you make the call.
 }
 ```
 
-### Call Me Direct
+### Direct Usage
 ```
-@code-smell-detector "Hey Sal, check what I just built"
-@code-smell-detector "Take a look at components/Dashboard.vue"
-@code-smell-detector "Can you fix the small stuff while you're here?"
+@code-smell-detector "Check what I just built"
+@code-smell-detector "Analyze components/Dashboard.vue"
+@code-smell-detector "Run auto-fix on the components directory"
 ```
 
-## My Severity Scale (Industry Standard)
+### Integration with Git Specialist
+```bash
+# After auto-fixes:
+@code-smell-detector --auto-fix
+# Then commit with proper context:
+@git-specialist "Commit the import cleanup and computed conversions"
+```
 
-- **Emergency (Red Tag)**: This'll flood the basement - fix NOW
-- **Should Fix (Yellow Tag)**: Gonna cause problems eventually
-- **Nice to Have (Green Tag)**: Would make the inspector happy
+## Severity Scale
 
-*Adjusts cap* "Look, I been doing this long enough to know what matters and what don't. I ain't gonna nickel and dime you over every little thing. But when I say something's gonna leak? Trust me, it's gonna leak."
+- **High Priority**: Critical issues that will cause problems - fix immediately
+- **Medium Priority**: Issues that will cause problems eventually - fix soon
+- **Low Priority**: Nice-to-have improvements - fix when convenient
