@@ -10,8 +10,8 @@
 
 | Metric | Status |
 |--------|--------|
-| **Total Optimizations** | 1 / 10 |
-| **Priority Items Complete** | 1 / 4 |
+| **Total Optimizations** | 2 / 10 |
+| **Priority Items Complete** | 2 / 4 |
 | **Agents Enhanced** | 14 / 14 |
 | **New Agents Created** | 0 / 1 |
 | **Slash Commands Updated** | 0 / 2 |
@@ -20,7 +20,7 @@
 
 ## Phase 1: High Impact, Low Effort (Priority)
 
-**Progress**: 1/4 tasks (25%)
+**Progress**: 2/4 tasks (50%)
 
 ### 1.1 Add Model Specifications to Agents [x] ✅
 - [x] Review all agent files in `.claude/agents/`
@@ -47,14 +47,15 @@
 
 ---
 
-### 1.2 Enhance TodoWrite Pattern Documentation
-- [ ] Add TodoWrite best practices section to CLAUDE.md
-- [ ] Include activeForm grammar rules
-- [ ] Add correct vs wrong examples
-- [ ] Emphasize BOTH content + activeForm required
-- [ ] Add common mistakes section
+### 1.2 Enhance TodoWrite Pattern Documentation [x] ✅
+- [x] Add TodoWrite best practices section to CLAUDE.md
+- [x] Include activeForm grammar rules
+- [x] Add correct vs wrong examples
+- [x] Emphasize BOTH content + activeForm required
+- [x] Add common mistakes section
 
 **Target location**: CLAUDE.md (after line 167)
+**Completed**: Added comprehensive TodoWrite documentation with grammar rules, examples, and best practices
 
 ---
 
