@@ -10,8 +10,8 @@
 
 | Metric | Status |
 |--------|--------|
-| **Total Optimizations** | 2 / 10 |
-| **Priority Items Complete** | 2 / 4 |
+| **Total Optimizations** | 3 / 10 |
+| **Priority Items Complete** | 3 / 4 |
 | **Agents Enhanced** | 14 / 14 |
 | **New Agents Created** | 0 / 1 |
 | **Slash Commands Updated** | 0 / 2 |
@@ -20,7 +20,7 @@
 
 ## Phase 1: High Impact, Low Effort (Priority)
 
-**Progress**: 2/4 tasks (50%)
+**Progress**: 3/4 tasks (75%)
 
 ### 1.1 Add Model Specifications to Agents [x] ✅
 - [x] Review all agent files in `.claude/agents/`
@@ -59,14 +59,20 @@
 
 ---
 
-### 1.3 Add Auto-Fix to Code Smell Detector
-- [ ] Read current code-smell-detector.md
-- [ ] Add "Sal's Quick Fixes" section
-- [ ] Include auto-fixable patterns (imports, watchEffect→computed, etc.)
-- [ ] Add bash scripts for common fixes
-- [ ] Test patterns don't break existing code
+### 1.3 Add Auto-Fix to Code Smell Detector [x] ✅
+- [x] Read current code-smell-detector.md
+- [x] Add "Sal's Quick Fixes" section
+- [x] Include auto-fixable patterns (imports, watchEffect→computed, etc.)
+- [x] Add bash scripts for common fixes
+- [x] Test patterns don't break existing code
 
 **File**: `.claude/agents/code-smell-detector.md`
+**Completed**: Added comprehensive "Sal's Quick Fixes" section with:
+- 5 auto-fixable patterns with bash scripts
+- Safety features and dry-run support
+- Risk assessment workflow (Green/Yellow/Red categorization)
+- Fix report template
+- Integration examples with git-specialist
 
 ---
 
@@ -213,4 +219,11 @@
   - 5 agents → claude-sonnet-3-5-v2 (fast analysis)
   - 3 agents → inherit (balanced tasks)
   - All with documented rationale
-- **Next**: Task 1.2 - Enhance TodoWrite pattern documentation
+- **Completed**: Task 1.2 - Enhanced TodoWrite pattern documentation in CLAUDE.md
+- **Completed**: Task 1.3 - Added auto-fix capabilities to code-smell-detector
+  - Added "Sal's Quick Fixes" section with 5 auto-fixable patterns
+  - Included bash scripts for safe auto-fixes (imports removal)
+  - Added risk assessment workflow (Green/Yellow/Red)
+  - Created fix report template
+  - Integrated with git-specialist workflow
+- **Next**: Task 1.4 - Create git commit message templates
