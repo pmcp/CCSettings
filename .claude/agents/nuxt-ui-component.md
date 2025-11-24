@@ -24,8 +24,217 @@ mcp__nuxt-ui__get_component("UModal")  # or whatever component you need
 # 4. RUN TYPECHECK - MANDATORY!
 npx nuxt typecheck
 
-# 5. Fix errors until typecheck passes with ZERO errors
+# 5. Self-Correction Loop (max 3 attempts)
+# If typecheck fails, use the Self-Correction Protocol below
+# to analyze and fix errors automatically
 ```
+
+---
+
+## Self-Correction Protocol
+
+**Goal**: Autonomously fix typecheck errors through structured retry loops.
+
+### When to Use
+- After creating/modifying a component
+- When `npx nuxt typecheck` reports errors
+- Before escalating to user for help
+
+### The 3-Attempt Loop
+
+```
+Attempt 1: Generate component → Typecheck
+           ↓ (if errors)
+Attempt 2: Analyze errors → Apply fixes → Typecheck
+           ↓ (if still errors)
+Attempt 3: Deep analysis → Alternative approach → Typecheck
+           ↓ (if still errors)
+Escalate:  Report to user with context
+```
+
+### Error Analysis Pattern
+
+**Step 1: Parse the Error**
+```bash
+npx nuxt typecheck
+```
+
+Extract:
+- **File path** - Which component has the issue
+- **Line number** - Exact location
+- **Error code** - TS error number (e.g., TS2339, TS2345)
+- **Error message** - What TypeScript is complaining about
+
+**Step 2: Categorize Error Type**
+
+| Error Type | TS Code | Common Cause | Fix Strategy |
+|------------|---------|--------------|--------------|
+| Property does not exist | TS2339 | Wrong prop name, missing import | Check MCP docs, verify prop spelling |
+| Type mismatch | TS2345, TS2322 | Wrong type for v-model or prop | Use correct v-model variant |
+| Missing required prop | TS2741 | Forgot to pass prop | Add prop to component usage |
+| Cannot find module | TS2307 | Import path wrong | Fix import path, check composable location |
+| Argument type incompatible | TS2345 | Wrong data structure | Check API signature in MCP docs |
+| Object possibly undefined | TS2532 | Missing null check | Add optional chaining `?.` or default `??` |
+
+**Step 3: Apply Fix Strategy**
+
+### Fix Strategy Library
+
+#### 1. v-model Mismatch (Most Common)
+```typescript
+// ❌ ERROR: Type 'boolean' not assignable to 'undefined'
+<UModal v-model="isOpen">
+
+// ✅ FIX: Overlays use v-model:open
+<UModal v-model:open="isOpen">
+
+// ❌ ERROR: Property 'open' does not exist
+<UInput v-model:open="email">
+
+// ✅ FIX: Inputs use v-model (no :open)
+<UInput v-model="email">
+```
+
+**Rule**: Overlays (UModal, USlideover, UDrawer) → `v-model:open`, Forms → `v-model`
+
+#### 2. Wrong Prop Name
+```typescript
+// ❌ ERROR: Property 'options' does not exist on type 'USelect'
+<USelect :options="items" />
+
+// ✅ FIX: v4 uses :items (not :options)
+<USelect :items="items" />
+```
+
+**Rule**: Always check MCP docs for exact prop names in v4
+
+#### 3. Missing Type/Import
+```typescript
+// ❌ ERROR: Cannot find name 'FormSubmitEvent'
+const onSubmit = (event: FormSubmitEvent) => {}
+
+// ✅ FIX: Import from @nuxt/ui
+import type { FormSubmitEvent } from '@nuxt/ui'
+```
+
+#### 4. Optional Chaining
+```typescript
+// ❌ ERROR: Object is possibly 'undefined'
+const name = props.user.name
+
+// ✅ FIX: Use optional chaining + default
+const name = props.user?.name ?? 'Unknown'
+```
+
+#### 5. Wrong Component Name
+```typescript
+// ❌ ERROR: Cannot find name 'UDropdown'
+<UDropdown :items="items" />
+
+// ✅ FIX: v4 renamed to UDropdownMenu
+<UDropdownMenu :items="items" />
+```
+
+#### 6. Slot Name Wrong
+```typescript
+// ❌ ERROR: Slot 'header' does not exist on 'UModal'
+<UModal>
+  <template #header>Title</template>
+  <template #content>Body</template>
+</UModal>
+
+// ✅ FIX: When using #content slot, no separate #header
+<UModal>
+  <template #content>
+    <div>
+      <h3>Title</h3>
+      <p>Body</p>
+    </div>
+  </template>
+</UModal>
+```
+
+### Self-Correction Workflow Example
+
+**Scenario**: Creating a user profile modal with form
+
+```typescript
+// ATTEMPT 1: Initial Implementation
+// Generate component based on MCP docs
+// Run: npx nuxt typecheck
+// Result: 3 errors
+
+// ERROR 1: TS2339 - Property 'options' does not exist on type 'USelect'
+// ERROR 2: TS2322 - Type 'boolean' is not assignable to type 'undefined'
+// ERROR 3: TS2307 - Cannot find module '@/composables/useUsers'
+
+// ATTEMPT 2: Analyze & Fix
+// Error 1 Fix: Change :options to :items (v4 pattern)
+<USelect :items="roles" />  // was :options
+
+// Error 2 Fix: Change v-model to v-model:open for UModal
+<UModal v-model:open="isOpen">  // was v-model
+
+// Error 3 Fix: Correct import path
+import { useUsers } from '~/composables/useUsers'  // was '@/composables'
+
+// Run: npx nuxt typecheck
+// Result: 0 errors ✅ SUCCESS
+```
+
+### When to Escalate (After 3 Attempts)
+
+If errors persist after 3 attempts, report to user:
+
+```markdown
+## Typecheck Failed After 3 Attempts
+
+**Component**: `components/UserProfileModal.vue`
+
+**Remaining Errors**:
+1. Line 42: TS2345 - Argument of type 'X' is not assignable to parameter of type 'Y'
+
+**What I Tried**:
+- Attempt 1: Applied v-model fix pattern → reduced errors from 3 to 1
+- Attempt 2: Checked MCP docs for UForm API → error persisted
+- Attempt 3: Tried alternative type annotation → same error
+
+**Suspected Issue**:
+The error suggests a type mismatch in the form submit handler. This might be due to a Zod schema issue or incorrect FormSubmitEvent usage.
+
+**Next Steps**:
+1. Please review the form schema definition
+2. Consider checking if @nuxt/ui types are up to date
+3. May need to explicitly type the event parameter
+
+**Component Code**: [attached]
+```
+
+### Self-Correction Checklist
+
+Before each typecheck run:
+- [ ] Verified v-model pattern (`:open` for overlays, regular for forms)
+- [ ] Checked component names (v4 only: UDropdownMenu, USwitch, USeparator)
+- [ ] Used `:items` (not `:options`) for USelect
+- [ ] Imported necessary types from '@nuxt/ui'
+- [ ] Added optional chaining for possibly undefined objects
+- [ ] Reviewed MCP docs for component API
+
+After each error:
+- [ ] Parsed error for file, line, code, message
+- [ ] Categorized error type
+- [ ] Applied appropriate fix strategy
+- [ ] Re-ran typecheck
+- [ ] Logged attempt number (1/2/3)
+
+### Success Criteria
+
+**PASS**: `npx nuxt typecheck` shows:
+```
+✔ Type checking completed successfully
+```
+
+**FAIL**: After 3 attempts, escalate with full context
 
 ## Vue Component Structure (Composition API Only)
 
@@ -383,9 +592,10 @@ UButton, UButtonGroup, UAccordion, UContextMenu
 - [ ] Checked VueUse for utilities
 - [ ] Error handling with try/catch and toast
 - [ ] **`npx nuxt typecheck` passes with ZERO errors** ⚠️
+- [ ] **Used Self-Correction Protocol if errors occurred** (max 3 attempts)
 - [ ] Accessibility (ARIA labels, keyboard nav)
 - [ ] Responsive design
 
 ---
 
-**Success = MCP docs checked + typecheck passes with 0 errors!**
+**Success = MCP docs checked + Self-Correction Protocol applied + typecheck passes with 0 errors!**

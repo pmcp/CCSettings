@@ -95,19 +95,19 @@
 
 ## Phase 2: Medium Impact, Medium Effort
 
-**Progress**: 0/3 tasks (0%)
+**Progress**: 1/3 tasks (33%)
 
-### 2.1 Add Self-Correction Protocol to Agents
-- [ ] Design self-correction pattern
-- [ ] Add to nuxt-ui-component.md first (test case)
-- [ ] Include retry loop logic (max 3 attempts)
-- [ ] Add error analysis patterns
+### 2.1 Add Self-Correction Protocol to Agents [x] ✅
+- [x] Design self-correction pattern
+- [x] Add to nuxt-ui-component.md first (test case)
+- [x] Include retry loop logic (max 3 attempts)
+- [x] Add error analysis patterns
 - [ ] Roll out to other code-generating agents if successful
 
-**Files to update**:
-- [ ] nuxt-ui-component.md (primary)
-- [ ] ui-builder.md
-- [ ] api-designer.md
+**Files updated**:
+- [x] nuxt-ui-component.md (primary) - Complete with full protocol
+- [ ] ui-builder.md (pending rollout)
+- [ ] api-designer.md (pending rollout)
 
 ---
 
@@ -241,3 +241,13 @@
   - Added verification checklist and full workflow example
 - **Status**: Phase 1 COMPLETE (4/4 tasks) ✅
 - **Next**: Phase 2 - Medium Impact, Medium Effort tasks
+- **Completed**: Task 2.1 - Add Self-Correction Protocol to Agents
+  - Designed comprehensive 3-attempt retry loop pattern
+  - Added Self-Correction Protocol section to nuxt-ui-component.md
+  - Included error analysis patterns with TS error code mappings (TS2339, TS2345, TS2322, etc.)
+  - Created Fix Strategy Library with 6 common error patterns (v-model mismatch, wrong prop names, missing imports, etc.)
+  - Added workflow example showing complete analyze → fix → recheck cycle
+  - Included escalation template for when 3 attempts fail
+  - Added self-correction checklists (before/after typecheck)
+  - Updated completion checklist and success criteria
+  - Ready for rollout to ui-builder.md and api-designer.md if pattern proves successful
