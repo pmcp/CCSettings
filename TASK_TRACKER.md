@@ -10,11 +10,12 @@
 
 | Metric | Status |
 |--------|--------|
-| **Total Optimizations** | 7 / 10 |
+| **Total Optimizations** | 7 / 16 |
 | **Priority Items Complete** | 4 / 4 |
 | **Agents Enhanced** | 14 / 14 |
 | **New Agents Created** | 1 / 1 |
 | **Phase 2 Complete** | 3 / 3 ✅ |
+| **Phase 4 Progress** | 6 / 6 ✅ |
 | **Slash Commands Updated** | 0 / 2 |
 
 ---
@@ -190,6 +191,79 @@
 
 ---
 
+## Phase 4: Opus Upgrade
+
+**Progress**: 6/6 tasks (100%) ✅ COMPLETE
+**Goal**: Optimize configuration for Claude Opus 4.5 capabilities
+
+### 4.1 Create Consolidated system-architect Agent [x] ✅
+- [x] Merge nuxt-architect.md + domain-architect.md
+- [x] Combine all architecture capabilities (Nuxt layers, DDD, NuxtHub, performance)
+- [x] Set model to opus
+- [x] Delete original agent files
+- [ ] Test with architecture planning task
+
+**New file**: `.claude/agents/system-architect.md`
+**Deleted files**: `nuxt-architect.md`, `domain-architect.md`
+
+---
+
+### 4.2 Create Consolidated test-engineer Agent [x] ✅
+- [x] Merge test-specialist.md + test-fixer.md
+- [x] Combine test creation, mocking, and debugging capabilities
+- [x] Set model to sonnet (fast iteration for test cycles)
+- [x] Delete original agent files
+- [ ] Test with comprehensive testing task
+
+**New file**: `.claude/agents/test-engineer.md`
+**Deleted files**: `test-specialist.md`, `test-fixer.md`
+
+---
+
+### 4.3 Update Agent Model Specifications [x] ✅
+- [x] code-reviewer-proactive.md → opus
+- [x] api-designer.md → opus
+- [x] ui-builder.md → opus
+- [x] nuxt-ui-component.md → opus
+- [x] code-smell-detector.md → opus
+- [x] template-scout.md → haiku
+
+**Rationale**: Opus for deep reasoning tasks, Haiku for fast search
+
+---
+
+### 4.4 Update Self-Correction Protocol [x] ✅
+- [x] Reduce max attempts from 3 to 2
+- [x] Add root cause analysis step
+- [x] Enhance error categorization for Opus reasoning
+- [x] Update escalation template
+
+**File**: `.claude/agents/nuxt-ui-component.md`
+
+---
+
+### 4.5 Add Model Selection Guidelines to CLAUDE.md [x] ✅
+- [x] Add "Model Selection Guidelines" section
+- [x] Document when to use Opus (deep reasoning)
+- [x] Document when to use Sonnet (balanced)
+- [x] Document when to use Haiku (fast)
+- [x] Include agent-model mapping
+
+**File**: `CLAUDE.md`
+
+---
+
+### 4.6 Enhance /think Command [x] ✅
+- [x] Explicitly leverage Opus extended thinking
+- [x] Add structured output format with Decision Matrix
+- [x] Include trade-off analysis template
+- [x] Add root cause analysis process
+- [x] Add quick analysis format for simpler problems
+
+**File**: `.claude/slash-commands/think.md`
+
+---
+
 ## Additional Enhancements
 
 ### CLAUDE.md Improvements
@@ -313,3 +387,21 @@
   - Updated Context Clearing Workflow to integrate Session Report as Step 2
   - Provided full example flow from report → decision → handoff
 - **Status**: Phase 2 COMPLETE (3/3 tasks) ✅
+
+### 2025-01-25 (Opus Upgrade)
+- **Started**: Phase 4 - Opus Upgrade optimization
+- **Context**: Upgraded from Sonnet to Opus 4.5, analyzing opportunities
+- **User Decisions**:
+  - Consolidate agent pairs (nuxt+domain architect, test specialist+fixer)
+  - Performance first (use Opus wherever valuable, cost secondary)
+  - Keep 70% context threshold (conservative approach works)
+  - Reduce self-correction from 3 to 2 attempts (trust Opus accuracy)
+- **Created**: Phase 4 task list in TASK_TRACKER.md
+- **Completed**: All Phase 4 tasks
+  - Task 4.1: Created system-architect (merged nuxt + domain architects)
+  - Task 4.2: Created test-engineer (merged test-specialist + test-fixer)
+  - Task 4.3: Updated 6 agents to Opus, 1 to Haiku
+  - Task 4.4: Reduced self-correction from 3 to 2 attempts
+  - Task 4.5: Added Model Selection Guidelines to CLAUDE.md
+  - Task 4.6: Enhanced /think command with Decision Matrix and trade-off analysis
+- **Status**: Phase 4 COMPLETE (6/6 tasks) ✅

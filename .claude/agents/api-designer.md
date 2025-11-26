@@ -2,8 +2,8 @@
 name: api-designer
 description: Design and implement Nuxt server APIs with proper types, validation, and edge optimization
 tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
-model: claude-sonnet-4-5
-# Model rationale: API design requires complex reasoning about contracts, security, performance, and integration patterns
+model: opus
+# Model rationale: API design requires complex reasoning about contracts, security, performance, and integration patterns. Opus handles trade-off analysis and security considerations better.
 ---
 
 # API Endpoint Designer

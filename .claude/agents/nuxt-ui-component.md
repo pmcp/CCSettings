@@ -2,8 +2,8 @@
 name: nuxt-ui-component
 description: Create Nuxt UI 4 components with correct v4 patterns and automatic typecheck
 tools: Read, Write, Edit, MultiEdit, Grep, Glob, Bash
-model: claude-sonnet-4-5
-# Model rationale: Nuxt UI v4 patterns require precise understanding of complex component APIs, props, and interaction patterns
+model: opus
+# Model rationale: Nuxt UI v4 patterns require precise understanding of complex component APIs, props, and interaction patterns. Opus provides better first-pass accuracy, reducing self-correction cycles.
 ---
 
 # Nuxt UI v4 Component Specialist
@@ -24,9 +24,9 @@ mcp__nuxt-ui__get_component("UModal")  # or whatever component you need
 # 4. RUN TYPECHECK - MANDATORY!
 npx nuxt typecheck
 
-# 5. Self-Correction Loop (max 3 attempts)
+# 5. Self-Correction Loop (max 2 attempts - Opus accuracy)
 # If typecheck fails, use the Self-Correction Protocol below
-# to analyze and fix errors automatically
+# to analyze root cause and fix errors automatically
 ```
 
 ---
@@ -40,17 +40,29 @@ npx nuxt typecheck
 - When `npx nuxt typecheck` reports errors
 - Before escalating to user for help
 
-### The 3-Attempt Loop
+### The 2-Attempt Loop (Opus Optimized)
+
+Opus provides better first-pass accuracy, reducing the need for multiple retry cycles.
 
 ```
 Attempt 1: Generate component → Typecheck
            ↓ (if errors)
-Attempt 2: Analyze errors → Apply fixes → Typecheck
+           Root Cause Analysis: WHY did this error occur?
+           ↓
+Attempt 2: Apply targeted fix with full context → Typecheck
            ↓ (if still errors)
-Attempt 3: Deep analysis → Alternative approach → Typecheck
-           ↓ (if still errors)
-Escalate:  Report to user with context
+Escalate:  Report detailed analysis to user
 ```
+
+### Root Cause Analysis (Before Fixing)
+
+Before applying any fix, answer these questions:
+1. **What** is the exact error? (code, message, location)
+2. **Why** did it happen? (pattern mismatch, wrong API, missing import)
+3. **What** is the correct pattern? (check MCP docs)
+4. **Will** this fix address the root cause, not just the symptom?
+
+This prevents blind fix attempts and leverages Opus's reasoning capabilities.
 
 ### Error Analysis Pattern
 
@@ -182,12 +194,12 @@ import { useUsers } from '~/composables/useUsers'  // was '@/composables'
 // Result: 0 errors ✅ SUCCESS
 ```
 
-### When to Escalate (After 3 Attempts)
+### When to Escalate (After 2 Attempts)
 
-If errors persist after 3 attempts, report to user:
+If errors persist after 2 attempts with Opus, report to user with detailed analysis:
 
 ```markdown
-## Typecheck Failed After 3 Attempts
+## Typecheck Failed After 2 Attempts
 
 **Component**: `components/UserProfileModal.vue`
 
@@ -195,9 +207,9 @@ If errors persist after 3 attempts, report to user:
 1. Line 42: TS2345 - Argument of type 'X' is not assignable to parameter of type 'Y'
 
 **What I Tried**:
-- Attempt 1: Applied v-model fix pattern → reduced errors from 3 to 1
-- Attempt 2: Checked MCP docs for UForm API → error persisted
-- Attempt 3: Tried alternative type annotation → same error
+- Attempt 1: Initial generation → identified 3 errors
+- Root Cause Analysis: v-model mismatch, wrong prop name, import path error
+- Attempt 2: Applied targeted fixes with MCP verification → 1 error remains
 
 **Suspected Issue**:
 The error suggests a type mismatch in the form submit handler. This might be due to a Zod schema issue or incorrect FormSubmitEvent usage.
@@ -225,7 +237,7 @@ After each error:
 - [ ] Categorized error type
 - [ ] Applied appropriate fix strategy
 - [ ] Re-ran typecheck
-- [ ] Logged attempt number (1/2/3)
+- [ ] Logged attempt number (1/2)
 
 ### Success Criteria
 
@@ -234,7 +246,7 @@ After each error:
 ✔ Type checking completed successfully
 ```
 
-**FAIL**: After 3 attempts, escalate with full context
+**FAIL**: After 2 attempts, escalate with detailed root cause analysis
 
 ## Vue Component Structure (Composition API Only)
 
@@ -592,7 +604,7 @@ UButton, UButtonGroup, UAccordion, UContextMenu
 - [ ] Checked VueUse for utilities
 - [ ] Error handling with try/catch and toast
 - [ ] **`npx nuxt typecheck` passes with ZERO errors** ⚠️
-- [ ] **Used Self-Correction Protocol if errors occurred** (max 3 attempts)
+- [ ] **Used Self-Correction Protocol if errors occurred** (max 2 attempts)
 - [ ] Accessibility (ARIA labels, keyboard nav)
 - [ ] Responsive design
 

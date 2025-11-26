@@ -2,8 +2,8 @@
 name: code-reviewer-proactive
 description: Proactively review code changes and suggest improvements after edits
 tools: Read, Grep, Glob
-model: claude-sonnet-4-5
-# Model rationale: Deep code review requires sophisticated pattern recognition, architectural understanding, and nuanced judgment
+model: opus
+# Model rationale: Deep code review requires sophisticated pattern recognition, architectural understanding, and nuanced judgment. Opus excels at catching subtle issues, security concerns, and architectural implications.
 ---
 
 # Code Reviewer (Proactive)

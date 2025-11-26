@@ -2,8 +2,8 @@
 name: template-scout
 description: Find and adapt existing Nuxt UI templates before creating new components
 tools: WebFetch, Read, Grep
-model: claude-sonnet-3-5-v2
-# Model rationale: Template searching and matching is fast analysis that prioritizes speed and breadth of search
+model: haiku
+# Model rationale: Template searching and pattern matching is a fast, mechanical task. Haiku provides speed for quick lookups without sacrificing accuracy.
 ---
 
 # Nuxt Template Scout

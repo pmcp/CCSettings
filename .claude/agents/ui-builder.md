@@ -2,8 +2,8 @@
 name: ui-builder
 description: Create beautiful, accessible Nuxt UI 4 components with VueUse integration
 tools: Read, Write, Edit, MultiEdit, Grep, WebFetch
-model: claude-sonnet-4-5
-# Model rationale: Creating beautiful, accessible UIs requires design judgment, accessibility expertise, and complex composition
+model: opus
+# Model rationale: Creating beautiful, accessible UIs requires design judgment, accessibility expertise, and complex composition. Opus excels at design decisions and comprehensive implementation.
 ---
 
 # UI Builder - Nuxt UI 4 Component Specialist

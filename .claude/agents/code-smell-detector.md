@@ -2,8 +2,8 @@
 name: code-smell-detector
 description: Identify code smells, over-engineering, and quality issues in Nuxt projects
 tools: Read, Grep, Glob, Write
-model: claude-sonnet-3-5-v2
-# Model rationale: Pattern matching and smell detection are fast analysis tasks that benefit from speed over deep reasoning
+model: opus
+# Model rationale: Deep architectural smell detection benefits from Opus's superior reasoning. Catches subtle anti-patterns, security issues, and long-term maintainability concerns.
 ---
 
 # Code Smell Detector

@@ -763,6 +763,48 @@ New Agent: "I see Task 1.5 is complete. Starting Task 1.6 - running migrations..
 - **Architecture**: Domain-Driven Design with Nuxt Layers
 - **Testing**: Vitest + Playwright
 
+## Model Selection Guidelines
+
+This project uses multiple Claude models strategically based on task complexity:
+
+### Opus (Deep Reasoning)
+Use for tasks requiring complex multi-step reasoning:
+- Architecture and design decisions (system-architect)
+- Complex multi-file refactoring
+- Security-sensitive code review (code-reviewer-proactive)
+- API design with trade-offs (api-designer)
+- Domain modeling
+- Code smell detection with architectural analysis (code-smell-detector)
+- UI component creation with complex patterns (ui-builder, nuxt-ui-component)
+
+**Agents on Opus**: system-architect, code-reviewer-proactive, api-designer, ui-builder, nuxt-ui-component, code-smell-detector
+
+### Sonnet (Balanced Speed & Quality)
+Use for tasks needing quality with reasonable iteration speed:
+- Test creation and debugging (test-engineer)
+- TypeScript error fixing (typecheck-specialist)
+- Git operations and commits (git-specialist)
+- Translation management (translations-specialist)
+- Schema generation (nuxt-crouton)
+- Parallel coordination (state-manager)
+
+**Agents on Sonnet**: test-engineer, typecheck-specialist, git-specialist, state-manager, translations-specialist, nuxt-crouton
+
+### Haiku (Fast)
+Use for simple, mechanical tasks:
+- Template/file search (template-scout)
+- Simple lookups and queries
+- Status checks
+- Basic transformations
+
+**Agents on Haiku**: template-scout
+
+### When to Override
+
+You can request a specific model when invoking an agent:
+- Use `model: opus` for complex, high-stakes decisions even from a Sonnet agent
+- Use `model: haiku` for quick queries within an Opus agent
+
 ## MANDATORY: TypeScript Checking
 **EVERY agent and Claude Code MUST run `npx nuxt typecheck` after making changes**
 - Run after creating/modifying Vue components
